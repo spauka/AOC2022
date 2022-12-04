@@ -5,8 +5,17 @@ from collections.abc import Iterable
 from itertools import chain, product
 from functools import partial
 
-def read_numbers(inp):
-    inps = re.findall(f"(-?[\d]+)", inp)
+NUM = re.compile("([\d]+)")
+NEG = re.compile("(-?[\d]+)")
+DEC = re.compile("(-?[\d]+(?:.[\d]+))")
+
+def read_numbers(inp, allow_negative=False, allow_decimal=False):
+    if not allow_negative and not allow_decimal:
+        inps = NUM.findall(inp)
+    elif allow_negative and not allow_decimal:
+        inps = NEG.findall(inp)
+    else:
+        inps = DEC.findall(inp)
     return [int(inp) for inp in inps]
 
 class Coord(tuple):
