@@ -6,9 +6,9 @@ with open("input5.txt") as f:
     instr = [read_numbers(x) for x in inp[10:]]
 
     for line in inp[:8]:
-        for j, c in enumerate(zip(*[iter(line)]*4)):
-            if c[1] != " ":
-                piles[j].append(c[1])
+        for j, c in enumerate(line[1::4]):
+            if c != " ":
+                piles[j].append(c)
     for pile in piles:
         pile.reverse()
 piles2 = [l[:] for l in piles]
