@@ -5,17 +5,8 @@ from collections.abc import Iterable
 from itertools import chain, product
 from functools import partial
 
-NUM = re.compile("([\d]+)")
-NEG = re.compile("(-?[\d]+)")
-DEC = re.compile("(-?[\d]+(?:.[\d]+))")
-
-def read_numbers(inp, allow_negative=False, allow_decimal=False):
-    if not allow_negative and not allow_decimal:
-        inps = NUM.findall(inp)
-    elif allow_negative and not allow_decimal:
-        inps = NEG.findall(inp)
-    else:
-        inps = DEC.findall(inp)
+def read_numbers(inp):
+    inps = re.findall(f"(-?[\d]+)", inp)
     return [int(inp) for inp in inps]
 
 class Coord(tuple):
@@ -44,6 +35,11 @@ class Coord(tuple):
         if not isinstance(o, (tuple, Coord)) or len(self) != len(o):
             raise TypeError(f"Must be a tuple of size {len(self)}")
         return Coord(x-y for x, y in zip(self, o))
+
+    def __mod__(self, o):
+        if not isinstance(o, (tuple, Coord)) or len(self) != len(o):
+            raise TypeError(f"Must be a tuple of size {len(self)}")
+        return Coord(x%y for x, y in zip(self, o))
 
     def dist(self, o):
         if not isinstance(o, (tuple, Coord)) or len(self) != len(o):
@@ -168,7 +164,7 @@ class Grid:
         return self.grid.shape
 
     def iter_coord(self):
-        return product(*(range(x) for x in self.shape))
+        return map(Coord, product(*(range(x) for x in self.shape)))
 
     def copy(self):
         new_grid = self.__class__(*self.shape, self.dtype, self.incl_diag)
@@ -202,7 +198,7 @@ class Grid:
         return Coord(self.shape[0]-1, 0)
 
     @classmethod
-    def load_dense_file(cls, file, incl_diag=False):
+    def load_dense_file(cls, file, incl_diag=False, dtype=int, conv_char=False):
         lines = []
         with open(file) as f:
             for line in f:
@@ -211,9 +207,9 @@ class Grid:
                 lines.append(list(c for c in line.strip()))
 
         shape = (len(lines[0]), len(lines))
-        grid = Grid(*shape, incl_diag=incl_diag)
+        grid = Grid(*shape, incl_diag=incl_diag, dtype=dtype)
         for i, line in enumerate(reversed(lines)):
-            grid[:, i] = line
+            grid[:, i] = line if not conv_char else [ord(c) for c in line]
         return grid
 
 class InfiniteGrid():
