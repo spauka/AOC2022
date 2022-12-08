@@ -26,16 +26,16 @@ for y in range(g.shape[1]):
 views = []
 for x, y in g.iter_coord():
     left = np.where(g[:x, y][::-1] >= g[x, y])[0]
-    left = left[0] if left.size else x
+    left = left[0]+1 if left.size else x
 
     right = np.where(g[x+1:, y] >= g[x, y])[0]
-    right = right[0] if right.size else g.shape[0]-x-1
+    right = right[0]+1 if right.size else g.shape[0]-x-1
 
     up = np.where(g[x, :y][::-1] >= g[x, y])[0]
-    up = up[0] if up.size else y
+    up = up[0]+1 if up.size else y
 
     down = np.where(g[x, y+1:] >= g[x, y])[0]
-    down = down[0] if down.size else g.shape[1]-y-1
+    down = down[0]+1 if down.size else g.shape[1]-y-1
 
     views.append(left*right*up*down)
 
