@@ -46,6 +46,11 @@ class Coord(tuple):
             raise TypeError(f"Must be a tuple of size {len(self)}")
         return sum(abs(c1-c2) for c1, c2 in zip(self, o))
 
+    def mag(self):
+        return sum(abs(c) for c in self)
+    def mag_l2(self):
+        return np.sqrt(sum(c**2 for c in self))
+
     def __repr__(self):
         return f"Coord{super().__repr__()}"
 
@@ -55,6 +60,10 @@ class Neighbours:
         'E': Coord(1, 0),
         'S': Coord(0, -1),
         'W': Coord(-1, 0),
+        'U': Coord(0, 1),
+        'R': Coord(1, 0),
+        'D': Coord(0, -1),
+        'L': Coord(-1, 0),
     }
     DIAG = {
         'NE': STRT['N'] + STRT['E'],
