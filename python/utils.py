@@ -59,7 +59,9 @@ class Neighbours:
         'N': Coord(0, 1),
         'E': Coord(1, 0),
         'S': Coord(0, -1),
-        'W': Coord(-1, 0),
+        'W': Coord(-1, 0)
+    }
+    NDIRS = {
         'U': Coord(0, 1),
         'R': Coord(1, 0),
         'D': Coord(0, -1),
@@ -71,7 +73,7 @@ class Neighbours:
         'SW': STRT['S'] + STRT['W'],
         'NW': STRT['N'] + STRT['W'],
     }
-    DIRS = STRT | DIAG
+    DIRS = STRT | NDIRS | DIAG
 
     def __init__(self, parent, incl_diag=False):
         self._parent = parent
@@ -164,6 +166,9 @@ class Grid:
     @property
     def neighbours(self):
         return Neighbours(self, self.incl_diag)
+    @property
+    def n(self):
+        return self.neighbours
 
     @property
     def size(self):
@@ -183,11 +188,15 @@ class Grid:
     def __getitem__(self, coord):
         if isinstance(coord, int):
             return self.grid[:, coord]
+        elif isinstance(coord, complex):
+            return self.grid[coord.real, coord.imag]
         return self.grid[coord]
 
     def __setitem__(self, coord, vals):
         if isinstance(coord, int):
             self.grid[:, coord] = vals
+        elif isinstance(coord, complex):
+            self.grid[coord.real, coord.imag] = vals
         self.grid[coord] = vals
 
     def __repr__(self):
@@ -232,6 +241,9 @@ class InfiniteGrid():
     @property
     def neighbours(self):
         return Neighbours(self, self.incl_diag)
+    @property
+    def n(self):
+        return self.neighbours
 
     @property
     def size(self):
