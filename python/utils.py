@@ -5,8 +5,17 @@ from collections.abc import Iterable
 from itertools import chain, product
 from functools import partial
 
-def read_numbers(inp):
-    inps = re.findall(f"(-?[\d]+)", inp)
+NUM = re.compile("([\d]+)")
+NEG = re.compile("(-?[\d]+)")
+DEC = re.compile("(-?[\d]+(?:.[\d]+))")
+
+def read_numbers(inp, allow_negative=False, allow_decimal=False):
+    if not allow_negative and not allow_decimal:
+        inps = NUM.findall(inp)
+    elif allow_negative and not allow_decimal:
+        inps = NEG.findall(inp)
+    else:
+        inps = DEC.findall(inp)
     return [int(inp) for inp in inps]
 
 class Coord(tuple):
@@ -53,6 +62,45 @@ class Coord(tuple):
 
     def __repr__(self):
         return f"Coord{super().__repr__()}"
+
+class Range:
+    def __init__(self, start, stop):
+        if stop < start:
+            raise ValueError(f"{stop} must be <= {start}")
+        self.start = start
+        self.stop = stop
+
+    def __repr__(self):
+        return f"Range({self.start}, {self.stop})"
+    def __len__(self):
+        return self.stop - self.start + 1
+
+    def __add__(self, o: "Range"):
+        olap = self.overlaps(o)
+        if not olap:
+            raise RuntimeError("Cannot combine non-overlapping ranges {self} and {o}")
+        if olap == -1:
+            nr = Range(self.start, o.stop)
+            return nr
+        else:
+            nr = Range(o.start, self.stop)
+            return nr
+
+    def contains(self, o: "Range"):
+        if (self.start <= o.start and
+            self.stop >= o.stop):
+            return True
+        return False
+    def iscontained(self, o: "Range"):
+        return o.contains(self)
+
+    def overlaps(self, o: "Range"):
+        if self.start <= o.start <= self.stop <= o.stop:
+            return -1
+        elif o.start <= self.start <= o.stop <= self.stop:
+            return 1
+        else:
+            return 0
 
 class Neighbours:
     STRT = {
