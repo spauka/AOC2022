@@ -312,11 +312,12 @@ class InfiniteGrid():
         return newinst
 
     def __valiter(self, coord):
-        if isinstance(coord, int):
+        if isinstance(coord, (int, np.integer)):
             raise IndexError("Can't index a single row in an InfiniteGrid")
         if len(coord) != 2:
             raise IndexError("Index must have dimension two")
-        if not (intt := all(isinstance(x, int) for x in coord)) and not all(isinstance(x, slice) for x in coord):
+        if not (intt := all(isinstance(x, (int, np.integer)) for x in coord)) and not all(isinstance(x, slice) for x in coord):
+            print(intt, [np.issubdtype(x, np.integer) for x in coord], coord)
             raise IndexError("Can index by exact position or by slice, not both")
         return intt
 
