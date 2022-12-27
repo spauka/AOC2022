@@ -12,7 +12,7 @@ rocks = cycle(np.nonzero(r == 1) for r in rocks)
 movement = cycle(open("input17.txt").read().strip())
 g = InfiniteGrid()
 for x in range(7):
-    g[x,0] = 1
+    g[x,0] = 1 # Set up floor
 
 def drop_rock(grid, next_rock, movement_iter, grid_width=7, start_x=2, start_height=4, count=1):
     # Figure out the starting position of the next rock
